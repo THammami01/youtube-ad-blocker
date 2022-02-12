@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Youtube Ad Blocker",
+  "description": "Block ads on Youtube by a simple click.",
+  "version": "1.0.0",
+  "icons": { "128": "icon.png" },
+  "action": {},
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "ad-blocker/script.js"
+  }
+}

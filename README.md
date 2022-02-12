@@ -1,6 +1,6 @@
 # YoutubeAdBlocker
 
-To skip the video ad, run this JS code
+To skip the video ad, run this JS code:
 
 ```js
 const video = document.getElementsByClassName('video-stream')[0];
@@ -9,8 +9,8 @@ video.currentTime = video.duration;
 skipButton.click();
 ```
 
-This one-liner is a working solution for the meantime
+When the extension's icon is clicked, this line of code will be run and the ad will be skipped.
 
 ```js
-setInterval(() => document.getElementsByClassName('ytp-ad-skip-button')[0].click(), 100);
+document.getElementsByClassName('ytp-ad-skip-button')[0].click()
 ```
