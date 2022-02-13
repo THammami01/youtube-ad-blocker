@@ -9,7 +9,7 @@ video.currentTime = video.duration;
 skipButton.click();
 ```
 
-This line of code is sufficient for skipping the 5s-must-watch type of ads.
+This line of code is sufficient for skipping the 5s-must-watch type of ads:
 
 ```js
 document.getElementsByClassName('ytp-ad-skip-button')[0].click()
@@ -17,3 +17,5 @@ document.getElementsByClassName('ytp-ad-skip-button')[0].click()
 
 The rest of the block is for skipping the unskippable ads..
 We will know soon enough once they appear. 🎉
+
+The extension skips the main ad automatically now and hides all type of ads. ✅
