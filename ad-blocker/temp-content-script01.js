@@ -36,7 +36,7 @@ const blockAd = async () => {
     try {
       const elements = await waitForElements(selector);
 
-      console.log(`${selector} - ${action}`);
+      console.info(`${selector} - ${action}`);
 
       switch (action) {
         case Action.click:

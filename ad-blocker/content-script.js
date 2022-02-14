@@ -1,17 +1,26 @@
+// SEND A MESSAGE TO ALL LISTENERS
+const sendSkippedAdData = (skippedAdData) => {
+  chrome.runtime.sendMessage({ skippedAdData }, (_res) => {
+    console.info("MESSAGE SEND SUCCESSFULLY");
+  });
+};
+
 const keepLooping = async () => {
   await new Promise((resolve, _reject) => {
     const videoPlayer = document.getElementById("movie_player");
 
     const setTimeoutHandler = () => {
-      let ad = videoPlayer?.classList.contains("ad-interrupting");
-      const nbOfSecondsSkipped = document.querySelector(
+      const ad = videoPlayer?.classList.contains("ad-interrupting");
+      const secondsSkipped = document.querySelector(
         ".ytp-ad-preview-text"
       )?.innerText;
+      const duration = document.querySelector(".ytp-time-duration")?.innerText;
 
-      if (ad && nbOfSecondsSkipped) {
-        console.info(`MAIN AD | ${nbOfSecondsSkipped} SECONDS SKIPPED`);
+      if (ad && secondsSkipped && duration !== "0:00") {
+        console.info(`MAIN AD | ${secondsSkipped} SECONDS SKIPPED`);
         // CLICK ON THE SKIP AD BTN
         document.querySelector(".ytp-ad-skip-button")?.click();
+        sendSkippedAdData({ secondsSkipped, duration });
       }
 
       // REMOVE THE AD THAT APPEARS ABOVE THE SUGGESTED NEXT VIDEOS
@@ -39,6 +48,10 @@ const main = async () => {
     );
 
   console.info("EXTENSION IS ON");
+
+  // TEST IT WITHOUT WAITING FOR THE AD
+  // sendSkippedAdData({ secondsSkipped: "5", duration: "2:00" });
+
   keepLooping();
 };
 

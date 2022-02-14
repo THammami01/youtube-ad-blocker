@@ -4,10 +4,14 @@
   "description": "Block ads on Youtube.",
   "version": "1.0.0",
   "icons": { "128": "icon.png" },
-  "action": {},
-  "permissions": ["activeTab", "scripting", "storage"],
+  "action": {
+    "default_title": "Youtube Ad Blocker",
+    "default_icon": "icon.png",
+    "default_popup": "popup/index.html"
+  },
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "background": {
-    "service_worker": "ad-blocker/script.js"
+    "service_worker": "ad-blocker/service-worker.js"
   },
   "content_scripts": [
     {
