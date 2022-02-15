@@ -1,8 +1,28 @@
-// SEND A MESSAGE TO ALL LISTENERS
+const MessageTypeEnum = {
+  SKIPPED_AD_DATA: "SKIPPED_AD_DATA",
+  PAGE_RELOAD_REQUEST: "PAGE_RELOAD_REQUEST",
+  EXTENSION_STATE_REQUEST: "EXTENSION_STATE_REQUEST",
+  EXTENSION_STATE_RESPONSE: "EXTENSION_STATE_RESPONSE",
+};
+
+// SEND SKIPPED AD DATA TO ALL LISTENERS (ONLY service-worker.js WILL RESPOND)
 const sendSkippedAdData = (skippedAdData) => {
-  chrome.runtime.sendMessage({ skippedAdData }, (_res) => {
-    console.info("MESSAGE SEND SUCCESSFULLY");
-  });
+  chrome.runtime.sendMessage(
+    { messageType: MessageTypeEnum.SKIPPED_AD_DATA, skippedAdData },
+    (_res) => {
+      console.info("SKIPPED AD DATA SENT SUCCESSFULLY");
+    }
+  );
+};
+
+// REQUEST EXTENSION STATE (ENABLED/DISABLED, ONLY service-worker.js WILL RESPOND)
+const requestExtensionState = () => {
+  chrome.runtime.sendMessage(
+    { messageType: MessageTypeEnum.EXTENSION_STATE_REQUEST },
+    (_res) => {
+      console.info("EXTENSION_STATE_REQUEST DATA SENT SUCCESSFULLY");
+    }
+  );
 };
 
 // AD TYPES:
@@ -77,7 +97,37 @@ const main = async () => {
   // TEST IT WITHOUT WAITING FOR THE AD
   // sendSkippedAdData({ secondsSkipped: "5", duration: "2:00" });
 
-  keepLooping();
+  requestExtensionState();
+
+  // TEST RECEIVING MESSAGES FROM script.js OR service-worker.js
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.info(
+      sender.tab
+        ? "From a content script: " + sender.tab.url
+        : "From the extension."
+    );
+
+    console.info("TYPE OF THE RECEIVED MESSAGE:");
+    console.info(request?.messageType);
+
+    switch (request?.messageType) {
+      case MessageTypeEnum.PAGE_RELOAD_REQUEST:
+        const msg = `Youtube Ad Blocker is turned ${
+          request.isExtensionEnabled ? "on" : "off"
+        }. Every Youtube tab is going to be reloaded in order for the extension to work properly.`;
+
+        // WORKS WITH THE ACTIVE TAB ONLY
+        // if (confirm(msg)) location.reload();
+        // WORKS WITH ALL TABS IN ALL WINDOWS
+        alert(msg);
+        location.reload();
+      case MessageTypeEnum.EXTENSION_STATE_RESPONSE:
+        if (request.isExtensionEnabled) {
+          keepLooping();
+          console.info("LOOPING");
+        } else console.info("NOT LOOPING");
+    }
+  });
 };
 
 main();

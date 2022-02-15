@@ -1,11 +1,18 @@
-const Items = {
-  videosSkipped: 0,
-  minutesSaved: 1,
+const MessageTypeEnum = {
+  SKIPPED_AD_DATA: "SKIPPED_AD_DATA",
+  PAGE_RELOAD_REQUEST: "PAGE_RELOAD_REQUEST",
+  EXTENSION_STATE_REQUEST: "EXTENSION_STATE_REQUEST",
+  EXTENSION_STATE_RESPONSE: "EXTENSION_STATE_RESPONSE",
+};
+
+const ItemsEnum = {
+  VIDEOS_SKIPPED: "VIDEOS_SKIPPED",
+  MINUTES_SAVED: "MINUTES_SAVED",
 };
 
 const initialData = {
-  enabled: true,
-  itemsShown: Items.videosSkipped,
+  isExtensionEnabled: true,
+  itemsShown: ItemsEnum.VIDEOS_SKIPPED,
   videosSkipped: {
     today: 0,
     week: 0,
@@ -28,7 +35,10 @@ const saveData = (data) => {
 
 // UPDATE DATA DISPLAYED IN THE POPUP
 const updateUI = (data) => {
-  if (+data.itemsShown === Items.videosSkipped) {
+  document.getElementById("isExtensionEnabledCb").checked =
+    data.isExtensionEnabled;
+
+  if (data.itemsShown === ItemsEnum.VIDEOS_SKIPPED) {
     document.getElementById("minutes").classList.remove("selected");
     document.getElementById("videos").classList.add("selected");
 
@@ -68,6 +78,19 @@ const getSecondsFromFormattedDuration = (duration) => {
 };
 */
 
+const askAllYoutubeTabsToReload = (isExtensionEnabled) => {
+  chrome.tabs.query({}, (tabs) => {
+    tabs
+      .filter((tab) => tab.url.startsWith("https://www.youtube.com/"))
+      .forEach((tab) =>
+        chrome.tabs.sendMessage(tab.id, {
+          messageType: MessageTypeEnum.PAGE_RELOAD_REQUEST,
+          isExtensionEnabled: isExtensionEnabled,
+        })
+      );
+  });
+};
+
 const main = () => {
   console.info("POPUP OPENED");
 
@@ -80,14 +103,23 @@ const main = () => {
     updateUI(data);
   });
 
+  document
+    .getElementById("isExtensionEnabledCb")
+    .addEventListener("change", (e) => {
+      data.isExtensionEnabled = e.target.checked;
+      updateUI(data);
+      saveData(data);
+      askAllYoutubeTabsToReload(e.target.checked);
+    });
+
   document.getElementById("videos").addEventListener("click", () => {
-    data.itemsShown = Items.videosSkipped;
+    data.itemsShown = ItemsEnum.VIDEOS_SKIPPED;
     updateUI(data);
     saveData(data);
   });
 
   document.getElementById("minutes").addEventListener("click", () => {
-    data.itemsShown = Items.minutesSaved;
+    data.itemsShown = ItemsEnum.MINUTES_SAVED;
     saveData(data);
     updateUI(data);
   });
@@ -118,6 +150,14 @@ const main = () => {
     sendResponse();
   });
   */
+
+  // let isEnabled = 0;
+  // setInterval(() => {
+  //   isEnabled = !isEnabled;
+  //   chrome.runtime.sendMessage({ isEnabled }, (res) => {
+  //     console.info(res);
+  //   });
+  // }, 2000);
 };
 
 window.onload = main;

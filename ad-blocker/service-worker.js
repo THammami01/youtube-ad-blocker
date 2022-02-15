@@ -5,48 +5,21 @@
 //   });
 // });
 
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   // console.info(
-//   //   sender.tab
-//   //     ? "From a content script: " + sender.tab.url
-//   //     : "From the extension."
-//   // );
+const ItemsEnum = {
+  VIDEOS_SKIPPED: "VIDEOS_SKIPPED",
+  MINUTES_SAVED: "MINUTES_SAVED",
+};
 
-//   let skippedAdData;
-//   chrome.storage.local.get(["skippedAdData"], (res) => {
-//     skippedAdData = res.skippedAdData;
-//   });
-
-//   chrome.storage.local.set(
-//     { skippedAdData: JSON.stringify(request?.skippedAdData) },
-//     () => {}
-//   );
-
-//   sendResponse({
-//     status: "RECEIVED FROM SERVICE WORKER",
-//     skippedAdData: request?.skippedAdData,
-//   });
-// });
-
-// let count = 0;
-// chrome.storage.local.get(["count"], (res) => {
-//   count = res.count;
-// });
-
-// setInterval(() => {
-//   chrome.storage.local.set({ count: ++count }, () => {
-//     console.info("COUNT: " + count);
-//   });
-// }, 1000);
-
-const Items = {
-  videosSkipped: 0,
-  minutesSaved: 1,
+const MessageTypeEnum = {
+  SKIPPED_AD_DATA: "SKIPPED_AD_DATA",
+  PAGE_RELOAD_REQUEST: "PAGE_RELOAD_REQUEST",
+  EXTENSION_STATE_REQUEST: "EXTENSION_STATE_REQUEST",
+  EXTENSION_STATE_RESPONSE: "EXTENSION_STATE_RESPONSE",
 };
 
 const initialData = {
   enabled: true,
-  itemsShown: Items.videosSkipped,
+  itemsShown: ItemsEnum.VIDEOS_SKIPPED,
   videosSkipped: {
     today: 0,
     week: 0,
@@ -80,31 +53,53 @@ const saveData = (data) => {
 // LISTEN FOR MESSAGES FROM content-script.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.info(
-    sender.tab
-      ? "From a content script: " + sender.tab.url
-      : "From the extension."
+    "REQUEST RECEIVED " + sender.tab
+      ? "FROM A CONTENT SCRIPT: " + sender.tab.url
+      : "FROM THE EXTENSION"
   );
 
-  console.info("REQUEST DATA:");
-  console.info(request?.skippedAdData);
+  console.info(request?.messageType);
 
-  if (request?.skippedAdData) {
-    chrome.storage.local.get(["savedData"], ({ savedData }) => {
-      if (savedData) savedData = JSON.parse(savedData);
-      else savedData = initialData;
+  switch (request?.messageType) {
+    case MessageTypeEnum.SKIPPED_AD_DATA:
+      chrome.storage.local.get(["savedData"], ({ savedData }) => {
+        if (savedData) savedData = JSON.parse(savedData);
+        else savedData = initialData;
 
-      if (request?.skippedAdData.duration) {
-        savedData.minutesSaved.totalInSeconds +=
-          getSecondsFromFormattedDuration(request.skippedAdData.duration);
-        savedData.minutesSaved.total = getMinutesFromSeconds(
-          savedData.minutesSaved.totalInSeconds
-        );
-      }
-      savedData.videosSkipped.total++;
+        if (request.skippedAdData.duration) {
+          savedData.minutesSaved.totalInSeconds +=
+            getSecondsFromFormattedDuration(request.skippedAdData.duration);
+          savedData.minutesSaved.total = getMinutesFromSeconds(
+            savedData.minutesSaved.totalInSeconds
+          );
+        }
+        savedData.videosSkipped.total++;
 
-      // SAVE DATA IN LOCAL STORAGE
-      saveData(savedData);
-    });
+        // SAVE DATA IN LOCAL STORAGE
+        saveData(savedData);
+      });
+
+      break;
+
+    case MessageTypeEnum.EXTENSION_STATE_REQUEST:
+      chrome.storage.local.get(["savedData"], ({ savedData }) => {
+        if (savedData) savedData = JSON.parse(savedData);
+        else {
+          savedData = initialData;b
+          // SAVE DATA IN LOCAL STORAGE
+          saveData(savedData);
+        }
+
+        chrome.tabs.sendMessage(sender.tab.id, {
+          messageType: MessageTypeEnum.EXTENSION_STATE_RESPONSE,
+          isExtensionEnabled: savedData.isExtensionEnabled,
+        });
+      });
+
+      break;
+
+    default:
+      break;
   }
 
   sendResponse();

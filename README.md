@@ -28,6 +28,7 @@ There are three scripts and here is the utility of each one of them:
 
 - contains the popup's logic
 - gets data that are shown in the popup from the local storage
+- it notifies all Youtube tabs when the extension is enabled/disabled
 
 `service-worker.js`
 
@@ -46,13 +47,16 @@ There are three scripts and here is the utility of each one of them:
   - skips the 5s-must-be-watched ads
   - removes all ads that are displayed
 - sends messages (that contain the duration of a skipped ad each time) to the content-script
+- shows an alert informing asking for page reload when the popup's toggle switch is turned on/off
 
 ```mermaid
-  graph TD;
-      content-script.js-->service-worker.js;
-      service-worker.js-->content-script.js;
-      service-worker.js-->Chrome_Storage_API;
-      Chrome_Storage_API-->script.js;
+graph RL;
+CSA(Chrome Storage API)
+content-script.js-->service-worker.js;
+service-worker.js-->content-script.js;
+service-worker.js-->CSA;
+CSA-->script.js;
+script.js-->content-script.js;
 ```
 
 And there are 6 types of ads:
