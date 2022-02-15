@@ -5,22 +5,47 @@ const sendSkippedAdData = (skippedAdData) => {
   });
 };
 
+// AD TYPES:
+// TYPE 1: APPEARS IN THE HOMEPAGE
+// TYPE 2: APPEARS ON TOP OF THE SUGGESTED LIST OF VIDEOS
+// TYPE 3: APPEARS UNDER THE DESCRIPTION
+// TYPE 4: SKIPPABLE 5-SECOND-MUST-BE-WATCHED VIDEO AD THAT APPEARS AT THE BEGINNING OF THE VIDEO, IN THE MIDDLE OR AT THE AD
+// TYPE 5: SIMILAR TO TYPE 4 BUT 2 VIDEO ADS APPEAR IN ROW AND NOT ONLY ONE
+// TYPE 6: UNSKIPPABLE 10-SECOND-MUST-BE-WATCHED VIDEO AD
+
 const keepLooping = async () => {
   await new Promise((resolve, _reject) => {
     const videoPlayer = document.getElementById("movie_player");
 
     const setTimeoutHandler = () => {
-      const ad = videoPlayer?.classList.contains("ad-interrupting");
+      const isAd = videoPlayer?.classList.contains("ad-interrupting");
       const secondsSkipped = document.querySelector(
         ".ytp-ad-preview-text"
       )?.innerText;
-      const duration = document.querySelector(".ytp-time-duration")?.innerText;
 
-      if (ad && secondsSkipped && duration !== "0:00") {
-        console.info(`MAIN AD | ${secondsSkipped} SECONDS SKIPPED`);
-        // CLICK ON THE SKIP AD BTN
-        document.querySelector(".ytp-ad-skip-button")?.click();
-        sendSkippedAdData({ secondsSkipped, duration });
+      if (isAd && secondsSkipped) {
+        // FOR AD TYPE 4
+        const durationType1 =
+          document.querySelector(".ytp-time-duration")?.innerText;
+        // FOR AD TYPE 5
+        const durationType2 = document.getElementById("ad-text:i")?.innerText;
+        // FOR AD TYPE 6
+        // const durationType3 = ...;
+
+        // CHECKING IF IT IS NOT EQUAL TO 0:00 INTEAD OF IF ITS TRUTHINESS
+        // BECAUSE IT IS ALWAYS IN THE DOM AND EQUALS TO 0:00
+        // CHANGES ONLY WHEN AD TYPE 4 APPEARS
+        if (durationType1 !== "0:00") {
+          // CLICK ON THE SKIP AD BTN
+          document.querySelector(".ytp-ad-skip-button")?.click();
+          sendSkippedAdData({ secondsSkipped, duration: durationType1 });
+        }
+        // APPEARS IN THE DOM ONLY WHEN AD TYPE 5 APPEARS
+        if (durationType2 && durationType2 !== "0:00") {
+          // CLICK ON THE SKIP AD BTN
+          document.querySelector(".ytp-ad-skip-button")?.click();
+          sendSkippedAdData({ secondsSkipped, duration: durationType2 });
+        }
       }
 
       // REMOVE THE AD THAT APPEARS ABOVE THE SUGGESTED NEXT VIDEOS
