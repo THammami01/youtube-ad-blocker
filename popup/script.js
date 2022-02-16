@@ -1,3 +1,82 @@
+const getTimestamps = () => {
+  const now = new Date();
+
+  return {
+    // current: now.getTime(), // GET CURRENT TIMESTAMP: Date.now() OR new Date().getTime()
+    today: new Date(new Date(now).setHours(0, 0, 0, 0)).getTime(),
+    firstDayOfWeek: new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - now.getDay() + 1
+    ).getTime(),
+    firstDayOfMonth: new Date(now.getFullYear(), now.getMonth(), 1).getTime(),
+  };
+};
+
+const getMinutesFromSeconds = (seconds) => {
+  // Math.ceil() GIVES INSTANT FEEDBACK FROM THE FIRST SKIPPED VIDEO, INSTEAD OF Math.round()
+  return Math.ceil(seconds / 60);
+};
+
+const getStats = (skippedAdsLogs) => {
+  const { today, firstDayOfWeek, firstDayOfMonth } = getTimestamps();
+
+  console.info("TIMESTAMPS");
+  console.info(today, firstDayOfWeek, firstDayOfMonth);
+
+  console.info("SKIPPED ADS LOGS");
+  console.info(skippedAdsLogs);
+
+  const stats = {
+    videosSkipped: {
+      today: 0,
+      week: 0,
+      month: 0,
+      total: 0,
+    },
+    minutesSaved: {
+      today: 0,
+      week: 0,
+      month: 0,
+      total: 0,
+    },
+  };
+
+  skippedAdsLogs.forEach(([adTimestamp, adSeconds]) => {
+    console.info("FOR EACH");
+    console.info(adTimestamp, adSeconds);
+
+    if (today <= adTimestamp) {
+      stats.videosSkipped.today++;
+      stats.minutesSaved.today += adSeconds;
+    } else if (firstDayOfWeek <= adTimestamp) {
+      stats.videosSkipped.week++;
+      stats.minutesSaved.week += adSeconds;
+    } else if (firstDayOfMonth <= adTimestamp) {
+      stats.videosSkipped.month++;
+      stats.minutesSaved.month += adSeconds;
+    } else {
+      stats.minutesSaved.total += adSeconds;
+    }
+  });
+
+  stats.videosSkipped.week += stats.videosSkipped.today;
+  stats.videosSkipped.month += stats.videosSkipped.week;
+  stats.videosSkipped.total = skippedAdsLogs.length;
+
+  stats.minutesSaved.week += stats.minutesSaved.today;
+  stats.minutesSaved.month += stats.minutesSaved.week;
+  stats.minutesSaved.total += stats.minutesSaved.month;
+
+  // TURN SECONDS INTO MINUTES
+  stats.minutesSaved.today = getMinutesFromSeconds(stats.minutesSaved.today);
+  stats.minutesSaved.week = getMinutesFromSeconds(stats.minutesSaved.week);
+  stats.minutesSaved.month = getMinutesFromSeconds(stats.minutesSaved.month);
+  stats.minutesSaved.total = getMinutesFromSeconds(stats.minutesSaved.total);
+
+  return stats;
+};
+
 const MessageTypeEnum = {
   SKIPPED_AD_DATA: "SKIPPED_AD_DATA",
   PAGE_RELOAD_REQUEST: "PAGE_RELOAD_REQUEST",
@@ -24,7 +103,6 @@ const initialData = {
     week: 0,
     month: 0,
     total: 0,
-    totalInSeconds: 0,
   },
 };
 
@@ -33,10 +111,19 @@ const saveData = (data) => {
   chrome.storage.local.set({ savedData: JSON.stringify(data) }, (_res) => {});
 };
 
+const updateSkippedAdsLogs = (skippedAdsLogs) => {
+  chrome.storage.local.set(
+    { savedSkippedAdsLogs: JSON.stringify(skippedAdsLogs) },
+    (_res) => {}
+  );
+};
+
 // UPDATE DATA DISPLAYED IN THE POPUP
 const updateUI = (data) => {
   document.getElementById("isExtensionEnabledCb").checked =
     data.isExtensionEnabled;
+  document.getElementById("isExtensionEnabledLbl").title =
+    data.isExtensionEnabled ? "Switch Off" : "Switch On";
 
   if (data.itemsShown === ItemsEnum.VIDEOS_SKIPPED) {
     document.getElementById("minutes").classList.remove("selected");
@@ -69,15 +156,6 @@ const updateUI = (data) => {
   }
 };
 
-// GET SECONDS FROM FORMATTED DURATION (EXAMPLE: 1:20 => 80)
-/*
-const getSecondsFromFormattedDuration = (duration) => {
-  console.info("FORMATTED: ", duration);
-  const durationArr = duration.split(":");
-  return parseInt(durationArr[0]) * 60 + parseInt(durationArr[1]);
-};
-*/
-
 const askAllYoutubeTabsToReload = (isExtensionEnabled) => {
   chrome.tabs.query({}, (tabs) => {
     tabs
@@ -95,13 +173,27 @@ const main = () => {
   console.info("POPUP OPENED");
 
   let data = initialData;
+  let skippedAdsLogs = [];
 
   // INITIALIZE OR RESTORE DATA
-  chrome.storage.local.get(["savedData"], ({ savedData }) => {
-    if (savedData) data = JSON.parse(savedData);
-    else saveData(data);
-    updateUI(data);
-  });
+  chrome.storage.local.get(
+    ["savedData", "savedSkippedAdsLogs"],
+    ({ savedData, savedSkippedAdsLogs }) => {
+      if (savedData) data = JSON.parse(savedData);
+      // else saveData(data);
+      if (savedSkippedAdsLogs) skippedAdsLogs = JSON.parse(savedSkippedAdsLogs);
+      else updateSkippedAdsLogs(skippedAdsLogs);
+
+      const { videosSkipped, minutesSaved } = getStats(skippedAdsLogs);
+      console.info("STATS");
+      console.info(videosSkipped);
+      console.info(minutesSaved);
+      data.videosSkipped = videosSkipped;
+      data.minutesSaved = minutesSaved;
+      saveData(data);
+      updateUI(data);
+    }
+  );
 
   document
     .getElementById("isExtensionEnabledCb")

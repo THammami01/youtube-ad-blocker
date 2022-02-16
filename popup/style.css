@@ -71,13 +71,13 @@ body {
 
 .container .stats-container img {
   width: 65px;
-  margin: 0 auto .25rem;
+  margin: 0 auto 0.25rem;
 }
 
 .container .ad {
   margin-top: 2rem;
-  border-top: .1rem solid #9a9a9a2e;
-  padding-top: .5rem;
+  border-top: 0.1rem solid #9a9a9a2e;
+  padding-top: 0.5rem;
   text-align: center;
 }
 

@@ -12,27 +12,18 @@
     <link rel="stylesheet" href="style.css" />
   </head>
 
-  <body class="dark-theme">
+  <body>
     <div class="container">
       <div class="title">
         <h1 class="text-1xl dark:text-white font-semibold">
           Youtube Ad Blocker
         </h1>
 
-        <!-- <label
-          for="toggle-example"
-          class="flex relative items-center mb-4 cursor-pointer"
-          title="Switch on"
-        >
-          <input type="checkbox" id="toggle-example" class="sr-only" />
-          <div
-            class="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"
-          ></div>
-        </label> -->
-
         <label
+          id="isExtensionEnabledLbl"
           for="isExtensionEnabledCb"
           class="flex relative items-center mb-4 cursor-pointer"
+          title="Switch on"
         >
           <input
             type="checkbox"
@@ -67,7 +58,7 @@
 
       <div class="stats-container">
         <div class="stats-el">
-          <img src="youtube-alt-logo.png" alt="Youtube Alternative Logo" />
+          <img src="youtube-alt-logo.png" draggable="false" alt="Youtube Alternative Logo" />
 
           <p class="desc text-xs font-medium dark:text-white">
             <span id="today-count">0</span>
@@ -76,7 +67,7 @@
         </div>
 
         <div class="stats-el">
-          <img src="youtube-alt-logo.png" alt="Youtube Alternative Logo" />
+          <img src="youtube-alt-logo.png" draggable="false" alt="Youtube Alternative Logo" />
 
           <p class="desc text-xs font-medium dark:text-white">
             <span id="this-week-count">0</span>
@@ -85,7 +76,7 @@
         </div>
 
         <div class="stats-el">
-          <img src="youtube-alt-logo.png" alt="Youtube Alternative Logo" />
+          <img src="youtube-alt-logo.png" draggable="false" alt="Youtube Alternative Logo" />
 
           <p class="desc text-xs font-medium dark:text-white">
             <span id="this-month-count">0</span>

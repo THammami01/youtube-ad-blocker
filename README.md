@@ -77,6 +77,4 @@ And there are 6 types of ads:
 
 ## Todos
 
-- Add enable/disable functionality.
-- Add stats of the current day/week/month.
-- In case the extension does not work properly when it is enabled/disabled, show an alert to confirm the reload of the page (I am not sure it will work properly when it is switched on and off from the toggle switch so this could be a simple solution).
+- Add support for ad type 6
