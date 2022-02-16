@@ -21,9 +21,6 @@ const getMinutesFromSeconds = (seconds) => {
 const getStats = (skippedAdsLogs) => {
   const { today, firstDayOfWeek, firstDayOfMonth } = getTimestamps();
 
-  console.info("TIMESTAMPS");
-  console.info(today, firstDayOfWeek, firstDayOfMonth);
-
   console.info("SKIPPED ADS LOGS");
   console.info(skippedAdsLogs);
 
@@ -43,9 +40,6 @@ const getStats = (skippedAdsLogs) => {
   };
 
   skippedAdsLogs.forEach(([adTimestamp, adSeconds]) => {
-    console.info("FOR EACH");
-    console.info(adTimestamp, adSeconds);
-
     if (today <= adTimestamp) {
       stats.videosSkipped.today++;
       stats.minutesSaved.today += adSeconds;

@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       break;
   }
 
-  chrome.tabs.query({}, function (tabs) {
+  chrome.tabs.query({}, (tabs) => {
     tabs
       .filter((tab) => tab.url.startsWith("https://www.youtube.com/"))
       .forEach(({ id }) => {
@@ -118,7 +118,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           // ADD NEW SKIPPED AD TO THE LOGS TEMP ARRAY
           savedSkippedAdsLogs.push([timestamp, adDurationInSeconds]);
 
-          console.info("MAIN BREAKPOINT REACHED");
+          console.info("ADDING NEW SKIPPED AD LOG TO");
           console.info(savedSkippedAdsLogs);
 
           // SAVE UPDATED LOGS IN LOCAL STORAGE

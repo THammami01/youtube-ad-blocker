@@ -77,4 +77,4 @@ And there are 6 types of ads:
 
 ## Todos
 
-- Add support for ad type 6
+None left.

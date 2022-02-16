@@ -35,15 +35,17 @@ const requestExtensionState = () => {
 
 const keepLooping = async () => {
   await new Promise((resolve, _reject) => {
-    const videoPlayer = document.getElementById("movie_player");
+    const videoContainer = document.getElementById("movie_player");
 
     const setTimeoutHandler = () => {
-      const isAd = videoPlayer?.classList.contains("ad-interrupting");
+      const isAd = videoContainer?.classList.contains("ad-interrupting");
       const secondsSkipped = document.querySelector(
         ".ytp-ad-preview-text"
       )?.innerText;
 
       if (isAd && secondsSkipped) {
+        const videoPlayer = document.getElementsByClassName("video-stream")[0];
+
         // FOR AD TYPE 4
         const durationType1 =
           document.querySelector(".ytp-time-duration")?.innerText;
@@ -56,12 +58,16 @@ const keepLooping = async () => {
         // BECAUSE IT IS ALWAYS IN THE DOM AND EQUALS TO 0:00
         // CHANGES ONLY WHEN AD TYPE 4 APPEARS
         if (durationType1 !== "0:00") {
+          if (videoPlayer && videoPlayer.duration)
+            videoPlayer.currentTime = videoPlayer.duration;
           // CLICK ON THE SKIP AD BTN
           document.querySelector(".ytp-ad-skip-button")?.click();
           sendSkippedAdData({ secondsSkipped, duration: durationType1 });
         }
         // APPEARS IN THE DOM ONLY WHEN AD TYPE 5 APPEARS
         if (durationType2 && durationType2 !== "0:00") {
+          if (videoPlayer && videoPlayer.duration)
+            videoPlayer.currentTime = videoPlayer.duration;
           // CLICK ON THE SKIP AD BTN
           document.querySelector(".ytp-ad-skip-button")?.click();
           sendSkippedAdData({ secondsSkipped, duration: durationType2 });
@@ -69,12 +75,26 @@ const keepLooping = async () => {
       }
 
       // REMOVE THE AD THAT APPEARS ABOVE THE SUGGESTED NEXT VIDEOS
+      // -- AD RELATED TO THE SKIPPED VIDEO
       document.hideElementsBySelector(".ytd-companion-slot-renderer");
+      // -- AD NOT RELATED TO SKIPPED VIDEO
+      document.hideElementsBySelector(".ytd-watch-next-secondary-results-renderer.sparkles-light-cta");
+      // -- SIMILAR TO THE PREVIOUS ONE BUT DIFFERENT COMPONENT
+      document.hideElementsBySelector(".ytd-unlimited-offer-module-renderer");
       // REMOVE THE AD THAT HAS A TRANSPARENT BLACK BG AND APPEARS DURING THE VIDEO
+      document.hideElementsBySelector(".ytp-ad-overlay-image")
       document.hideElementsBySelector(".ytp-ad-text-overlay");
-      // REMOVE THE AD THAT APPEARS IN THE HOMEPAGE
+      // REMOVE ADS THAT APPEARS IN THE HOMEPAGE
+      // -- AD THAT LOOKS LIKE A REGULAR VIDEO
       document.hideElementsBySelector(".ytd-display-ad-renderer");
-
+      // -- AD THAT DISPLAYS IN THE MIDDLE OF THE PAGE
+      document.hideElementsBySelector(".ytd-statement-banner-renderer");
+      // -- SUBSCRIBE FOR PREMIUM
+      document.hideElementsBySelector(".ytd-banner-promo-renderer");
+      // -- LOOKS SIMILAR TO SUBSCRIBE FOR PREMIUM BUT FOR A DIFFERENT ADVERTISER
+      document.hideElementsBySelector(".ytd-video-masthead-ad-v3-renderer");
+      // -- YOUTUBE TV AD
+      document.hideElementsBySelector(".ytd-primetime-promo-renderer");
       resolve();
     };
 
