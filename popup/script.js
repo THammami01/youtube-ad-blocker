@@ -1,14 +1,31 @@
+// SOLUTION LINK: https://stackoverflow.com/a/37334083/11542205
+const getFirstDayOfWeek = (fromDate) => {
+  const dayLength = 24 * 60 * 60 * 1000;
+
+  const currentDate = new Date(
+    fromDate.getFullYear(),
+    fromDate.getMonth(),
+    fromDate.getDate()
+  );
+
+  const currentWeekDayMillisecond = currentDate.getDay() * dayLength;
+
+  let monday = new Date(
+    currentDate.getTime() - currentWeekDayMillisecond + dayLength
+  );
+
+  if (monday > currentDate) monday = new Date(monday.getTime() - dayLength * 7);
+  return monday;
+};
+
 const getTimestamps = () => {
   const now = new Date();
 
+  // ! TIMEZONES
   return {
     // current: now.getTime(), // GET CURRENT TIMESTAMP: Date.now() OR new Date().getTime()
     today: new Date(new Date(now).setHours(0, 0, 0, 0)).getTime(),
-    firstDayOfWeek: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - now.getDay() + 1
-    ).getTime(),
+    firstDayOfWeek: getFirstDayOfWeek(now).getTime(),
     firstDayOfMonth: new Date(now.getFullYear(), now.getMonth(), 1).getTime(),
   };
 };
@@ -20,6 +37,9 @@ const getMinutesFromSeconds = (seconds) => {
 
 const getStats = (skippedAdsLogs) => {
   const { today, firstDayOfWeek, firstDayOfMonth } = getTimestamps();
+
+  console.info("TIMESTAMPS");
+  console.info(today, firstDayOfWeek, firstDayOfMonth);
 
   console.info("SKIPPED ADS LOGS");
   console.info(skippedAdsLogs);
