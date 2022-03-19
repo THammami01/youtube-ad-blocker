@@ -1,0 +1,86 @@
+html,
+body {
+  font-size: 1rem;
+  width: 300px;
+  min-height: 180px;
+  transition: color 200ms, background-color 300ms;
+  background-color: #e5e7eb;
+  user-select: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+}
+
+.container .title {
+  display: flex;
+  justify-content: space-between;
+  color: #3f3f3f;
+}
+
+.container .videos-or-minutes {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.container .videos-or-minutes .selected span {
+  padding-bottom: 0.05rem;
+  border-bottom: 0.15rem solid #9a9a9a;
+}
+
+.container .videos-or-minutes > :not(.selected) {
+  font-weight: 300;
+  color: #9a9a9a;
+  cursor: pointer;
+}
+
+.container .count {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.container .count .desc {
+  color: #9a9a9a;
+}
+
+.container .stats-container {
+  margin-top: 1.65rem;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  gap: 1rem;
+  line-height: 1.1;
+}
+
+.container .stats-container .stats-el {
+  flex: 1;
+  color: #3f3f3f;
+}
+
+.container .stats-container img {
+  width: 65px;
+  margin: 0 auto 0.25rem;
+}
+
+.container .ad {
+  margin-top: 2rem;
+  border-top: 0.1rem solid #9a9a9a2e;
+  padding-top: 0.5rem;
+  text-align: center;
+}
+
+.container .ad a {
+  color: #1c64f2;
+}

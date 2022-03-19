@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Youtube Ad Blocker</title>
+
+    <!-- FLOWBITE UI LIBRARY STYLESHEET -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/flowbite@1.3.3/dist/flowbite.min.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="title">
+        <h1 class="text-1xl dark:text-white font-semibold">
+          Youtube Ad Blocker
+        </h1>
+
+        <label
+          id="isExtensionEnabledLbl"
+          for="isExtensionEnabledCb"
+          class="flex relative items-center mb-4 cursor-pointer"
+          title="Switch on"
+        >
+          <input
+            type="checkbox"
+            id="isExtensionEnabledCb"
+            class="sr-only"
+            checked
+          />
+          <div
+            class="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"
+          ></div>
+        </label>
+      </div>
+
+      <div class="videos-or-minutes">
+        <p id="videos" class="selected text-2xl dark:text-white font-bold">
+          <span>V</span>ideos
+        </p>
+
+        <p id="minutes" class="text-2xl dark:text-white font-bold">
+          <span>M</span>inutes
+        </p>
+      </div>
+
+      <div class="count">
+        <p class="text-6xl dark:text-white font-bold">
+          <span id="total-count">0</span>
+        </p>
+        <p class="desc text-1xl dark:text-white" id="total-count-desc">
+          Videos Skipped
+        </p>
+      </div>
+
+      <div class="stats-container">
+        <div class="stats-el">
+          <img src="youtube-alt-logo.png" draggable="false" alt="Youtube Alternative Logo" />
+
+          <p class="desc text-xs font-medium dark:text-white">
+            <span id="today-count">0</span>
+            <span class="count-type">videos</span><br />today
+          </p>
+        </div>
+
+        <div class="stats-el">
+          <img src="youtube-alt-logo.png" draggable="false" alt="Youtube Alternative Logo" />
+
+          <p class="desc text-xs font-medium dark:text-white">
+            <span id="this-week-count">0</span>
+            <span class="count-type">videos</span><br />this week
+          </p>
+        </div>
+
+        <div class="stats-el">
+          <img src="youtube-alt-logo.png" draggable="false" alt="Youtube Alternative Logo" />
+
+          <p class="desc text-xs font-medium dark:text-white">
+            <span id="this-month-count">0</span>
+            <span class="count-type">videos</span><br />this month
+          </p>
+        </div>
+      </div>
+
+      <div class="ad">
+        <p class="desc text-sm font-medium dark:text-white">
+          Powered by
+          <a
+            id="price-hero-link"
+            href="https://www.pricehero.net/"
+            title="Visit PriceHero"
+            >PriceHero</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- FLOWBITE UI LIBRARY SCRIPT -->
+    <!-- <script src="https://unpkg.com/flowbite@1.3.3/dist/flowbite.js"></script> -->
+
+    <script src="script.js"></script>
+  </body>
+</html>

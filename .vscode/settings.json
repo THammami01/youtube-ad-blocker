@@ -1,0 +1,11 @@
+{
+  "files.exclude": {
+    "ad-blocker/temp-content-script01.js": true,
+    "ad-blocker/temp-content-script02.js": true,
+    "popup/index.html": true,
+    // "popup/style.css": true,
+    "popup/youtube-alt-logo.png": true,
+    "icon.png": true,
+    "manifest.png": true
+  }
+}
