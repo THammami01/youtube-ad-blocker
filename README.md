@@ -1,5 +1,10 @@
 # YoutubeAdBlocker
 
+Preview:
+
+<img src="YAB.png" alt="YAB" width="600" />
+
+
 To skip the video ad, run this JS code:
 
 ```js
