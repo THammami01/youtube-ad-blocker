@@ -1,58 +1,51 @@
-# YoutubeAdBlocker
+# Youtube Ad Blocker
 
-Preview:
+## Overview
 
-<img src="YAB.png" alt="YAB" width="600" />
+Extension for Chromium-based broswers that skips video ads and hides other 5+ types of banner ads on YouTube, as well as displays statistics for what was skipped (number and duration per past day, month and the total).
 
-
-To skip the video ad, run this JS code:
-
-```js
-const video = document.getElementsByClassName("video-stream")[0];
-const skipButton = document.getElementsByClassName("ytp-ad-skip-button")[0];
-video.currentTime = video.duration;
-skipButton.click();
-```
-
-This line of code is sufficient for skipping the 5s-must-watch type of ads:
-
-```js
-document.getElementsByClassName("ytp-ad-skip-button")[0].click();
-```
-
-The rest of the block is for skipping the unskippable ads..
-We will know soon enough once they appear. 🎉
-
-The extension skips the main ad automatically now and hides all type of ads. ✅
+<img src="illustration.png" alt="YAB Illustration" width="500" />
 
 ## Notes
 
-There are three scripts and here is the utility of each one of them:
+### Base
 
-`script.js`
+To skip a video ad:
 
-- contains the popup's logic
-- gets data that are shown in the popup from the local storage
-- it notifies all Youtube tabs when the extension is enabled/disabled
+```js
+const video = document.getElementsByClassName("video-stream")[0];
+video.currentTime = video.duration;
+document.getElementsByClassName("ytp-ad-skip-button")[0].click();
+```
 
-`service-worker.js`
+The last line of code might be sufficient for the "5s must-watch" ads.
 
-- always running in the background
-  - either active or inactive
-  - no activity for ≈10 seconds turns it into inactive mode
-  - when a message is received it becomes active again
-- listens for messages from the content-script.js
-- has access to the extension's local storage and updates it when a message is received
-- as soon as a message is received, the event listeners you create run their callback functions
+### Scripts
 
-`content-script.js`
+There are three scripts and here is the utility of each one:
 
-- injected in the Youtube website
-- blocks all types of ads
-  - skips the 5s-must-be-watched ads
-  - removes all ads that are displayed
-- sends messages (that contain the duration of a skipped ad each time) to the content-script
-- shows an alert informing asking for page reload when the popup's toggle switch is turned on/off
+1. `script.js`
+
+   - Contains the popup's logic.
+   - Retrieves data displayed in the popup from local storage.
+   - Notifies all YouTube tabs when the extension is enabled/disabled.
+
+2. `service-worker.js`
+
+   - Always running in the background;
+     - Either active or inactive, with inactivity for approximately 10 seconds resulting in an inactive state.
+     - Becomes active again upon receiving a message.
+   - Listens for messages from `content-script.js`.
+   - Has access to the extension's local storage and updates it when a message is received.
+   - Runs event listeners callback functions immediately upon receiving a message.
+
+3. `content-script.js`
+   - Injected into the YouTube website.
+   - Blocks all types of ads;
+     - Skips must-be-watched ads.
+     - Hides banner ads.
+   - Sends messages containing the details of skipped ads to `content script.js`.
+   - Displays an alert, prompting for a page reload, when the popup's toggle switch is turned on/off.
 
 ```mermaid
 graph RL;
@@ -64,22 +57,28 @@ CSA-->script.js;
 script.js-->content-script.js;
 ```
 
-And there are 6 types of ads:
+### Types of Ads
 
-- Type 1: appears in the homepage
-- Type 2: appears on top of the suggested list of videos
-- Type 3: appears under the description
-- Type 4: skippable 5-second-must-be-watched video ad that appears at the beginning of the video, in the middle or at end
-- Type 5: similar to type 4 but 2 video ads appear in row and not only one
-- Type 6: unskippable 10-second-must-be-watched video ad
+1. Appears on the homepage.
+2. Appears on top of the suggested list of videos.
+3. Appears under the video description.
+4. Skippable 5-second-must-be-watched video ad at the beginning, middle, or end of a video.
+5. Similar to Type 4, but with two consecutive video ads.
+6. Unskippable 10-second-must-be-watched video ad.
 
-**NB:**
+And more discovered when using a VPN across multiple countries.
 
-- All data are saved in the local storage and that makes it a standalone app.
-- The manifest is of version 3 that can be deployed to the Chrome Web Store without any editing.
+### Additional Details
+
+- All data are saved in local storage, making it a standalone app.
+- The manifest is version 3 and can be deployed to the Chrome Web Store without any code updates.
 - Code is formatted using Prettier default style guides.
-- The components are taken from Flowbite UI that is based on Tailwind CSS.
+- Flowbite UI components, based on Tailwind CSS, are used.
 
 ## Todos
 
-None left.
+- Address extension issues with video ads to make it work with the latest YouTube updates.
+
+## Extension Preview
+
+<img src="popup.png" alt="YAB Popup" width="600" />
